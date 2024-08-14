@@ -1,6 +1,9 @@
-import "./App.css";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
+import { GameField, GameBoard, Strike } from "../components/Game";
+import { Button } from "../components/Button";
+import { Page } from "../components/Page";
+import React from "react";
 
 const ticTacToeMachine = createMachine(
   {
@@ -27,18 +30,6 @@ const ticTacToeMachine = createMachine(
       },
       playing: {
         always: [
-          {
-            guard: "checkDraw",
-            actions: assign(({ context }) => {
-              return {
-                turn: context.turn,
-                board: [...context.board],
-                moves: context.moves,
-                result: "draw",
-              };
-            }),
-            target: "draw",
-          },
           {
             guard: "checkWin",
             actions: assign(({ context }) => {
@@ -68,6 +59,15 @@ const ticTacToeMachine = createMachine(
               return { result: null };
             }),
             target: "won",
+          },
+          {
+            guard: "checkDraw",
+            actions: assign(() => {
+              return {
+                result: "draw",
+              };
+            }),
+            target: "draw",
           },
         ],
         on: {
@@ -170,38 +170,36 @@ const ticTacToeMachine = createMachine(
 
 function TicTacToe() {
   const [current, send] = useMachine(ticTacToeMachine, { devTools: true });
-  const { board, turn, moves, result } = current.context;
+  const { board, turn, result } = current.context;
 
   return (
-    <div>
-      TicTacToe
-      {result == "draw" && <div>game result is draw</div>}
-      {result == "x" && <div>X won the game</div>}
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
+    <Page className={result}>
+      <h1>TicTacToe</h1>
+      {turn && !result && <h2>&quot;{turn}&quot; TRUN</h2>}
+      {result === "o" ||
+        (result === "x" && <h2>&quot;{result}&quot; WINS!</h2>)}
+      {result === "draw" && <h2>DRAW!</h2>}
+      <GameBoard>
         {board.map((_, index) => {
           return (
-            <div
-              style={{
-                flexBasis: "32%",
-                backgroundColor: "grey",
-                width: "50px",
-                height: "50px",
-                border: "1px solid white",
-              }}
+            <GameField
+              data-testid="game-field"
               onClick={() => send({ type: "MOVE", index: index })}
               key={index}
             >
-              {board[index]}
-            </div>
+              {board[index] && (
+                <Strike className={board[index]}>{board[index]}</Strike>
+              )}
+            </GameField>
           );
         })}
-      </div>
+      </GameBoard>
       {current.value === "idle" ? (
-        <button onClick={() => send({ type: "START" })}>START GAME</button>
+        <Button onClick={() => send({ type: "START" })}>START GAME</Button>
       ) : (
-        <button onClick={() => send({ type: "RESET" })}>RESTART GAME</button>
+        <Button onClick={() => send({ type: "RESET" })}>RESTART GAME</Button>
       )}
-    </div>
+    </Page>
   );
 }
 
