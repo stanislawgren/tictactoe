@@ -132,7 +132,7 @@ const ticTacToeMachine = createMachine(
   {
     guards: {
       checkDraw: ({ context }) => {
-        return context.moves >= 9;
+        return context.moves >= 9 && !context.result;
       },
       validMove: ({ context, event }) => {
         return !context.board[event.index];
@@ -188,7 +188,12 @@ function TicTacToe() {
               key={index}
             >
               {board[index] && (
-                <Strike data-testid={`${board[index]}_mark`}className={board[index]}>{board[index]}</Strike>
+                <Strike
+                  data-testid={`${board[index]}_mark`}
+                  className={board[index]}
+                >
+                  {board[index]}
+                </Strike>
               )}
             </GameField>
           );
