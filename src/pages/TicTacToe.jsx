@@ -132,7 +132,6 @@ const ticTacToeMachine = createMachine(
   {
     guards: {
       checkDraw: ({ context }) => {
-        console.log(context);
         return context.moves >= 9;
       },
       validMove: ({ context, event }) => {
@@ -176,8 +175,9 @@ function TicTacToe() {
     <Page className={result}>
       <h1>TicTacToe</h1>
       {turn && !result && <h2>&quot;{turn}&quot; TRUN</h2>}
-      {result === "o" ||
-        (result === "x" && <h2>&quot;{result}&quot; WINS!</h2>)}
+      {(result === "o" || result === "x") && (
+        <h2>&quot;{result}&quot; WINS!</h2>
+      )}
       {result === "draw" && <h2>DRAW!</h2>}
       <GameBoard>
         {board.map((_, index) => {
@@ -188,16 +188,26 @@ function TicTacToe() {
               key={index}
             >
               {board[index] && (
-                <Strike className={board[index]}>{board[index]}</Strike>
+                <Strike data-testid={`${board[index]}_mark`}className={board[index]}>{board[index]}</Strike>
               )}
             </GameField>
           );
         })}
       </GameBoard>
       {current.value === "idle" ? (
-        <Button onClick={() => send({ type: "START" })}>START GAME</Button>
+        <Button
+          data-testid="start-button"
+          onClick={() => send({ type: "START" })}
+        >
+          START GAME
+        </Button>
       ) : (
-        <Button onClick={() => send({ type: "RESET" })}>RESTART GAME</Button>
+        <Button
+          data-testid="restart-button"
+          onClick={() => send({ type: "RESET" })}
+        >
+          RESTART GAME
+        </Button>
       )}
     </Page>
   );
