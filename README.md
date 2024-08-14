@@ -53,6 +53,10 @@ checkWin: ({ context }) => {
 
 Draw is checked by number of "moves". If there was 9 moves, and there was no winner, state goes to "draw".
 
+There is also guard for checking possibility of move, simply checking if field is marked.
+
+```!context.board[event.index]```
+
 Tests are checking if board is properly rendered, and if actions are triggered correclty.
 
 ![image](https://github.com/user-attachments/assets/5fc3de59-13e4-4ec2-8478-c3dc1142ed22)
